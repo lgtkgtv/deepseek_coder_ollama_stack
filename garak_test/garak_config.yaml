@@ -1,0 +1,20 @@
+llm:
+  type: openai  # This tells Garak to use OpenAI-compatible API (which Ollama exposes)
+  base_url: http://localhost:11434/v1
+  model: deepseek-coder:1.3b  # This must match exactly with `ollama list`
+
+probes:
+  - promptinjection
+  - jailbreak
+  - sensitiveinfo
+  - codeexecution
+  - sqlinjection
+
+output:
+  format: text
+  file: garak_results.txt  # This is where results will be saved
+
+run:
+  parallel_probes: 2
+  max_generations: 5
+

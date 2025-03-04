@@ -16,6 +16,7 @@ services:
       - ollama_network
     environment:
       OLLAMA_BASE_URL: "http://ollama:11434"
+      OLLAMA_DISABLE_CUDA: "1"   # not required but adds clarity 
     volumes:
       - ./openwebui_data:/app/backend/data
     ports:

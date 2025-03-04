@@ -14,7 +14,7 @@ This stack provides a **fully Docker-based deployment** of:
 
 ## 📦 System Requirements
 
-✅ Ubuntu 22.04 or newer  
+✅ Ubuntu 22.04 **or newer**  
 ✅ Docker 24+ (installed correctly)  
 ✅ CPU with **AVX2 support** (run: `grep avx2 /proc/cpuinfo`)  
 ✅ At least **8GB RAM** (more is better)  
@@ -102,19 +102,6 @@ This is not required for CPU-only machines, but can add clarity.
 
 ---
 
-## ❌ Podman Warning
-
-This stack **will NOT work with Podman**. Ensure Podman is NOT installed:
-```bash
-sudo apt-get remove --purge podman podman-compose
-```
-Check `docker-compose version` to ensure it’s the **real Docker Compose**:
-```bash
-docker-compose version
-```
-
----
-
 ## 🛑 Stopping the Stack
 
 ```bash
@@ -158,12 +145,19 @@ grep avx2 /proc/cpuinfo
 
 ---
 
-Happy coding! 🚀
+## ❌ Podman Warning
+
+This stack **will NOT work with Podman**. Ensure Podman is NOT installed:
+```bash
+sudo apt-get remove --purge podman podman-compose
+```
+Check `docker-compose version` to ensure it’s the **real Docker Compose**:
+```bash
+docker-compose version
 ```
 
 ---
 
-### 📥 Want me to regenerate this into a file (`README.md`) inside your zip and give you the updated zip again?  
-Or would you like me to **push it directly into your GitHub repo (if you give me the repo URL)**?
-
-Let me know! 😃
+Happy coding! 🚀📥 😃
+```
+---

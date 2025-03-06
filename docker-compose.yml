@@ -1,26 +1,27 @@
 services:
   ollama:
-    image: ollama/ollama
-    restart: unless-stopped
+    image: ollama/ollama    # Uses the official Ollama image to run the language model server.
+    restart: unless-stopped # Ensures Ollama restarts automatically after system reboots or crashes, maintaining service availability.
     networks:
-      - ollama_network
+      - ollama_network               # Attaches Ollama to a dedicated network, isolating it from other containers and enabling secure communication with Open Web UI.
     volumes:
-      - ./ollama_data:/root/.ollama
+      - ./ollama_data:/root/.ollama  # Persists Ollama's data (models, configurations) on the host, preventing data loss across container restarts or removals.
     ports:
-      - "127.0.0.1:11434:11434"
+      - "127.0.0.1:11434:11434"      # Exposes Ollama's API on localhost, limiting access to the host machine for security and preventing external exposure.
 
   openwebui:
-    image: ghcr.io/open-webui/open-webui:main
-    restart: unless-stopped
+    image: ghcr.io/open-webui/open-webui:main  # Uses the Open Web UI image to provide a web interface for interacting with Ollama.
+    restart: unless-stopped                    # Ensures Open Web UI restarts automatically, maintaining consistent access.
     networks:
-      - ollama_network
+      - ollama_network                        # Connects Open Web UI to the same network as Ollama, allowing it to communicate with the language model server.
     environment:
-      OLLAMA_BASE_URL: "http://ollama:11434"
-      OLLAMA_DISABLE_CUDA: "1"   # not required but adds clarity 
+      OLLAMA_BASE_URL: "http://ollama:11434"  # Configures Open Web UI to connect to the Ollama service using its internal network name, facilitating seamless communication.
+      OLLAMA_DISABLE_CUDA: "1"                # Disables CUDA within the container, useful when running on systems without a compatible Nvidia GPU
     volumes:
-      - ./openwebui_data:/app/backend/data
+      - ./openwebui_data:/app/backend/data    # Persists Open Web UI's data (settings, history) on the host, retaining user configurations across container lifecycles.
     ports:
-      - "127.0.0.1:3000:8080"
+      - "127.0.0.1:3000:8080"  # Exposes Open Web UI on localhost, making it accessible through a web browser on the host machine while limiting external access.
 
 networks:
-  ollama_network:
+  ollama_network:  # Creates a custom network specifically for Ollama and Open Web UI, enhancing security by isolating them from other Docker networks
+  

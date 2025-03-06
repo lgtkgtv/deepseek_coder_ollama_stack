@@ -1,0 +1,1 @@
+write\$vulnerable_module(buf ptr[in], count len[buf])

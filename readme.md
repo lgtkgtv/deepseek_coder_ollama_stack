@@ -47,13 +47,22 @@ https://github.com/lgtkgtv/deepseek_coder_ollama_stack.git
 cd deepseek_coder_ollama_stack
 ```
 
----
 
 ### 3️⃣ Start Ollama + Open WebUI
 
 ```bash
 # docker compose up -d
 docker-compose up -d
+```
+
+### 3️⃣ Optional - Cleanup Older Ollama instance
+
+If `docker-compose up -d` fails with `Error starting userland proxy: listen tcp4 127.0.0.1:11434: bind: address already in use` message, 
+then check if you already have an older instance of `ollama` running...
+```sh
+sudo lsof -i :11434
+sudo systemctl list-units --type=service | grep ollama
+sudo systemctl stop ollama.service
 ```
 
 Check they are running:

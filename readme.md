@@ -43,7 +43,7 @@ docker-compose --version
 ### 2️⃣ Clone This Repository
 
 ```bash
-git clone https://github.com/YOUR-GITHUB-USERNAME/deepseek_coder_ollama_stack.git
+https://github.com/lgtkgtv/deepseek_coder_ollama_stack.git
 cd deepseek_coder_ollama_stack
 ```
 
@@ -52,7 +52,8 @@ cd deepseek_coder_ollama_stack
 ### 3️⃣ Start Ollama + Open WebUI
 
 ```bash
-docker compose up -d
+# docker compose up -d
+docker-compose up -d
 ```
 
 Check they are running:

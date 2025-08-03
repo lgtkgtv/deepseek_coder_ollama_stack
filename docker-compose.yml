@@ -1,82 +1,36 @@
-# docker-compose.yml
-
-version: '3.8' # Specify the Docker Compose file format version
+version: '3.8'
 
 services:
   ollama:
     image: ollama/ollama:latest
-    container_name: ollama # Explicit name for easier management
-    restart: unless-stopped # Ensures Ollama restarts automatically after system reboots or crashes
-    
-    # Restrict Ollama's API to only be accessible from the host machine (127.0.0.1)
-    # This enhances security for local deployments.
+    container_name: ollama
+    # No --gpus=all here as you don't have a GPU
     ports:
-      - "127.0.0.1:11434:11434" # Host:11434 -> Container:11434
-
-    # Use a named volume for persistent storage of models.
-    # Docker manages this volume, making it more robust and portable than bind mounts.
+      - "11434:11434" # Ollama API port
     volumes:
-      - ollama_models:/root/.ollama
-
-    # Environment variables for CPU optimization.
-    # OLLAMA_HOST is typically 0.0.0.0 internally, but explicitly setting it to 127.0.0.1 here
-    # ensures it only listens on localhost *within* the container if that's preferred,
-    # though Docker's port mapping usually handles external access.
-    # OLLAMA_NUM_PARALLEL and OLLAMA_MAX_LOADED_MODELS can help manage CPU resource usage.
-    # OLLAMA_DEBUG:INFO can provide more verbose logs if troubleshooting is needed.
-    environment:
-      # - OLLAMA_HOST=0.0.0.0 # Or 127.0.0.1 if you prefer it strictly local even internally
-      # - OLLAMA_NUM_PARALLEL=1 # Limit parallel requests, beneficial for CPU
-      # - OLLAMA_MAX_LOADED_MODELS=1 # Limit models loaded into RAM, useful for CPU/limited RAM
-      - OLLAMA_DEBUG=INFO # Set logging level for Ollama, e.g., INFO, DEBUG
-
-    # Connect to the custom network for isolated communication with open-webui
-    networks:
-      - ollama_network
+      - ollama_models:/root/.ollama # Persistent storage for models
+    restart: unless-stopped
+    # Environment variables for CPU optimization (optional, can be added if you face issues)
+    # environment:
+    #   - OLLAMA_HOST=0.0.0.0
+    #   - OLLAMA_NUM_PARALLEL=1 # Limit parallel requests for CPU
+    #   - OLLAMA_MAX_LOADED_MODELS=1 # Limit loaded models for CPU
 
   open-webui:
-    image: ghcr.io/open-webui/open-webui:ollama # Recommended image for connecting to a separate Ollama service
-    container_name: open-webui # Explicit name for easier management
-    restart: unless-stopped # Ensures Open WebUI restarts automatically
-
-    # Restrict Open WebUI access to only the host machine (127.0.0.1) for security.
+    image: ghcr.io/open-webui/open-webui:ollama
+    container_name: open-webui
     ports:
-      - "127.0.0.1:3000:8080" # Host:3000 -> Container:8080 (WebUI internal port)
-
-    # Use a named volume for persistent storage of WebUI data (chat history, users, settings).
+      - "3000:8080" # WebUI access port (Host:3000 -> Container:8080)
     volumes:
-      - open-webui_data:/app/backend/data
-
-    # Ensure Ollama starts before Open WebUI.
-    # While the shared network handles communication, depends_on helps with startup order.
+      - open-webui_data:/app/backend/data # Persistent storage for WebUI data (chat history, users)
     depends_on:
-      - ollama
-
-    # Environment variables for Open WebUI
+      - ollama # Ensures Ollama starts before Open WebUI
     environment:
-      # Point Open WebUI to the Ollama service using its Docker network name.
-      # This allows internal communication without exposing Ollama's port to the host's 0.0.0.0.
-      - OLLAMA_BASE_URL=http://ollama:11434
-      
-      # Explicitly disable CUDA for CPU-only systems. This prevents the WebUI from trying
-      # to use a non-existent GPU and ensures it sticks to CPU-based operations.
-      - OLLAMA_DISABLE_CUDA=1 # Recommended for CPU-only setups
+      # Optional: Set a secret key for Open WebUI for added security (replace with a strong, random string)
+      # - WEBUI_SECRET_KEY=your_super_secret_key_here
+      - OLLAMA_BASE_URL=http://ollama:11434 # Point to the Ollama service within the Docker network
+    restart: unless-stopped
 
-      # IMPORTANT: Set a strong, random secret key for Open WebUI for added security.
-      # Replace 'your_super_strong_random_secret_key_here' with a unique string.
-      # You can generate one with `openssl rand -hex 32` or similar.
-      # - WEBUI_SECRET_KEY=your_super_strong_random_secret_key_here
-
-    # Connect to the custom network for isolated communication with Ollama
-    networks:
-      - ollama_network
-
-# Define the custom Docker network for isolated communication
-networks:
-  ollama_network:
-    # driver: bridge # Default, can be omitted but good for clarity
-
-# Define the named volumes for persistent data storage
 volumes:
   ollama_models:
   open-webui_data:
